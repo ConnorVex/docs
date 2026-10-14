@@ -12,6 +12,17 @@ import Pagination from "virtual:starlight/components/Pagination";
 			<button class="feedback-btn" data-helpful="yes">👍 Yes</button>
 			<button class="feedback-btn" data-helpful="no">👎 No</button>
 		</div>
+		<div
+			class="feedback-text-wrapper"
+			id="feedback-text-wrapper"
+			style="display: none;"
+		>
+			<textarea
+				class="feedback-text"
+				id="feedback-text"
+				placeholder="Tell us what to change..."></textarea>
+			<button class="feedback-btn" data-helpful="no">Submit</button>
+		</div>
 		<p id="feedback-thanks" style="display: none;">
 			Thank you for your feedback!
 		</p>
@@ -44,20 +55,41 @@ import Pagination from "virtual:starlight/components/Pagination";
 	);
 	const promptText = document.getElementById("feedback-prompt");
 	const thanksText = document.getElementById("feedback-thanks");
+	const feedbackText = document.getElementById(
+		"feedback-text",
+	) as HTMLTextAreaElement;
+	const feedbackTextWrapper = document.getElementById(
+		"feedback-text-wrapper",
+	) as HTMLElement;
 
 	buttons.forEach((button) => {
 		button.addEventListener("click", (e) => {
 			const response = (
 				e.currentTarget as HTMLButtonElement
 			).getAttribute("data-helpful");
+			const feedbackTextString = feedbackText.value;
+			if (response == "no") {
+				if (feedbackTextWrapper.style.display == "none") {
+					feedbackTextWrapper.style.display = "block";
+					return;
+				}
+			}
+
 			const pagePath = window.location.pathname;
 
 			// Send the custom event to Google Analytics 4
 			if (typeof window.gtag === "function") {
-				window.gtag("event", "page_feedback", {
-					page_path: pagePath,
-					was_helpful: response, // Will pass either "yes" or "no"
-				});
+				if (response == "no")
+					window.gtag("event", "page_feedback", {
+						page_path: pagePath,
+						was_helpful: response,
+						feedback_text: feedbackTextString,
+					});
+				else
+					window.gtag("event", "page_feedback", {
+						page_path: pagePath,
+						was_helpful: response,
+					});
 			} else {
 				console.warn("Google Analytics (gtag) is not loaded yet.");
 			}
@@ -65,13 +97,16 @@ import Pagination from "virtual:starlight/components/Pagination";
 			if (buttonsContainer && promptText && thanksText) {
 				buttonsContainer.style.display = "none";
 				promptText.style.display = "none";
+				feedbackTextWrapper.style.display = "none";
 				thanksText.style.display = "block";
 			}
 		});
 	});
 
 	if (window.location.pathname == "/" || window.location.pathname == "") {
-		document.querySelectorAll(".feedback-section")[0].style.display = "none";
+		(
+			document.querySelectorAll(".feedback-section")[0] as HTMLElement
+		).style.display = "none";
 	}
 </script>
 
@@ -117,5 +152,16 @@ import Pagination from "virtual:starlight/components/Pagination";
 		flex-wrap: wrap;
 		font-size: var(--sl-text-sm);
 		color: var(--sl-color-gray-3);
+	}
+	.feedback-text-wrapper {
+		margin: 2rem;
+	}
+	.feedback-text {
+		min-width: 100%;
+		background: var(--sl-color-gray-6);
+		padding: 1rem;
+	}
+	.feedback-text::placeholder {
+		color: var(--sl-color-text);
 	}
 </style>
