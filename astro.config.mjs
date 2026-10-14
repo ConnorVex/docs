@@ -200,8 +200,24 @@ export default defineConfig({
                                     link: "/jsg-core/standalone/",
                                 },
                                 {
+                                    label: 'Resources',
+                                    items: [{ autogenerate: { directory: 'jsg-core/resources' } }],
+                                },
+                                {
+                                    label: 'Energy',
+                                    items: [{ autogenerate: { directory: 'jsg-core/energy' } }],
+                                },
+                                {
+                                    label: 'Address system',
+                                    items: [{ autogenerate: { directory: 'jsg-core/address-system' } }],
+                                },
+                                {
                                     label: 'Configuration',
                                     items: [{ autogenerate: { directory: 'jsg-core/configuration' } }],
+                                },
+                                {
+                                    label: 'Download',
+                                    items: [{ autogenerate: { directory: 'jsg-core/download' } }],
                                 },
                                 {
                                     label: 'For Developers',
