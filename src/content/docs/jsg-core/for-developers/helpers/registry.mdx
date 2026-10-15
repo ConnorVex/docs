@@ -5,70 +5,132 @@ description: "Using the registry helper class"
 sidebar:
   order: 0
 ---
-import { FileTree, Steps } from "@astrojs/starlight/components";
+import { FileTree, Steps, Tabs, TabItem } from "@astrojs/starlight/components";
 
 Registry helper is a class that is responsible of holding registries and helping developer handle some of the registrations (Menu types for example).
+<Tabs>
+	<TabItem label="Forge 1.20.1">
+		<Steps>
+		1. Create class `ModRegistriesInit.java` *(in package `registry`)*
+			<FileTree>
+			- libs/
+			- src/main/java/your/namespace/yourmodid/
+				- common/
+					- registry/
+						- **ModRegistriesInit.java**
+				- ExampleMod.java
+			- ...
+			</FileTree>
+			```java title="ModRegistriesInit.java"
+			import dev.tauri.jsgcore.common.registry.helper.RegistryHelper;
+			import net.minecraftforge.eventbus.api.IEventBus;
 
-<Steps>
-1. Create class `ModRegistriesInit.java` *(in package `registry`)*
-	<FileTree>
-	- libs/
-	- src/main/java/your/namespace/yourmodid/
-		- common/
-			- registry/
-				- **ModRegistriesInit.java**
-		- ExampleMod.java
-	- ...
-	</FileTree>
-	```java title="ModRegistriesInit.java"
-	import dev.tauri.jsg.core.common.registry.helper.RegistryHelper;
-	import net.minecraftforge.eventbus.api.IEventBus;
+			public class ModRegistriesInit {
+				// create a constant object of the RegistryHelper
+				public static final RegistryHelper REGISTRY_HELPER = new RegistryHelper("your_mod_id");
 
-	public class ModRegistriesInit {
-		// create a constant object of the RegistryHelper
-		public static final RegistryHelper REGISTRY_HELPER = new RegistryHelper("your_mod_id");
+				// declare init method
+				public static void init() {
+					// we will be putting stuff here...
+				}
 
-		// declare init method
-		public static void init() {
-			// we will be putting stuff here...
-		}
+				// and register method
+				public static void register(IEventBus bus) {
+					REGISTRY_HELPER.register(bus); // IMPORTANT!
+				}
+			}
+			```
+		2. Inside your main class update the constructor:
+			<FileTree>
+			- libs/
+			- src/main/java/your/namespace/yourmodid/
+				- common/
+					- registry/
+						- ModRegistriesInit.java
+				- **ExampleMod.java**
+			- ...
+			</FileTree>
+			```java title="ExampleMod.java"
+			@Mod("your_mod_id")
+			public class ExampleMod implements JSGAddon {
+				public ExampleMod(){
+					// ...
+					ModRegistriesInit.init(); // inicialize the registries (load all constants etc.)
 
-		// and register method
-		public static void register(IEventBus bus) {
-			REGISTRY_HELPER.register(bus); // IMPORTANT!
-		}
-	}
-	```
-2. Inside your main class update the constructor:
-	<FileTree>
-	- libs/
-	- src/main/java/your/namespace/yourmodid/
-		- common/
-			- registry/
-				- ModRegistriesInit.java
-		- **ExampleMod.java**
-	- ...
-	</FileTree>
-	```java title="ExampleMod.java"
-	@Mod("your_mod_id")
-	public class ExampleMod implements JSGAddon {
-		public ExampleMod(){
-			// ...
-			ModRegistriesInit.init(); // inicialize the registries (load all constants etc.)
+					// ...some other registrations and stuff
 
-			// ...some other registrations and stuff
+					// if you don't have already one, get the IEventBus
+					IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
 
-			// if you don't have already one, get the IEventBus
-			IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
+					// IMPORTANT!
+					ModRegistriesInit.register(eventBus); // register the registries
+					// ...
+				}
+			}
+			```
+		3. Now you have set up a registry helper for your mod!
+		</Steps>
+	</TabItem>
+	<TabItem label="NeoForge 1.21.1">
+		<Steps>
+		1. Create class `ModRegistriesInit.java` *(in package `registry`)*
+			<FileTree>
+			- libs/
+			- src/main/java/your/namespace/yourmodid/
+				- common/
+					- registry/
+						- **ModRegistriesInit.java**
+				- ExampleMod.java
+			- ...
+			</FileTree>
+			```java title="ModRegistriesInit.java"
+			import dev.tauri.jsgcore.common.registry.helper.RegistryHelper;
+			import net.neoforged.bus.api.IEventBus;
 
- 			// IMPORTANT!
-			ModRegistriesInit.register(eventBus); // register the registries
-			// ...
-		}
-	}
-	```
-3. Now you have set up a registry helper for your mod!
-</Steps>
+			public class ModRegistriesInit {
+				// create a constant object of the RegistryHelper
+				public static final RegistryHelper REGISTRY_HELPER = new RegistryHelper("your_mod_id");
+
+				// declare init method
+				public static void init() {
+					// we will be putting stuff here...
+				}
+
+				// and register method
+				public static void register(IEventBus bus) {
+					REGISTRY_HELPER.register(bus); // IMPORTANT!
+				}
+			}
+			```
+		2. Inside your main class update the constructor:
+			<FileTree>
+			- libs/
+			- src/main/java/your/namespace/yourmodid/
+				- common/
+					- registry/
+						- ModRegistriesInit.java
+				- **ExampleMod.java**
+			- ...
+			</FileTree>
+			```java title="ExampleMod.java"
+			@Mod("your_mod_id")
+			public class ExampleMod implements JSGAddon {
+				public ExampleMod(IEventBus eventBus){
+					// ...
+					ModRegistriesInit.init(); // inicialize the registries (load all constants etc.)
+
+					// ...some other registrations and stuff
+
+					// IMPORTANT!
+					ModRegistriesInit.register(eventBus); // register the registries
+					// ...
+				}
+			}
+			```
+		3. Now you have set up a registry helper for your mod!
+		</Steps>
+	</TabItem>
+</Tabs>
 
 ## Registering an item
 
@@ -85,10 +147,10 @@ Registry helper is a class that is responsible of holding registries and helping
 	- ...
 	</FileTree>
 	```java title="ModItems.java"
-	import dev.tauri.jsg.core.common.item.JSGItem;
-	import dev.tauri.jsg.core.common.registry.helper.builder.item.ItemRegistryHelperGeneric;
-	import net.minecraftforge.registries.RegistryObject;
-	import dev.tauri.jsg.core.common.registry.CoreTabs; // only needed when using CoreTabs
+	import dev.tauri.jsgcore.common.item.JSGItem;
+	import dev.tauri.jsgcore.common.registry.CoreTabs; // only needed when using CoreTabs
+	import dev.tauri.jsgcore.common.registry.helper.builder.item.ItemRegistryHelperGeneric;
+	import dev.tauri.jsgcore.common.registry.helper.RegistryObjectWrapper;
 
 	public class ModItems {
 		// create item registry helper
@@ -96,13 +158,13 @@ Registry helper is a class that is responsible of holding registries and helping
 
 
 		// register your item
-		public static final RegistryObject<JSGItem> MY_AWESOME_ITEM = ITEM_HELPER.builder("my_awesome_item").buildGeneric();
+		public static final RegistryObjectWrapper<JSGItem> MY_AWESOME_ITEM = ITEM_HELPER.builder("my_awesome_item").buildGeneric();
 		// register more items...
-		public static final RegistryObject<JSGItem> ANOTHER_COOL_ITEM = ITEM_HELPER.builder("another_cool_item").buildGeneric();
+		public static final RegistryObjectWrapper<JSGItem> ANOTHER_COOL_ITEM = ITEM_HELPER.builder("another_cool_item").buildGeneric();
 		// item without generic tooltip
-		public static final RegistryObject<JSGItem> ITEM_WITHOUT_TOOLTIP = ITEM_HELPER.builder("item_without_tooltip").clearTooltip().buildGeneric();
+		public static final RegistryObjectWrapper<JSGItem> ITEM_WITHOUT_TOOLTIP = ITEM_HELPER.builder("item_without_tooltip").clearTooltip().buildGeneric();
 		// item inside core tab
-		public static final RegistryObject<JSGItem> ITEM_IN_TAB = ITEM_HELPER.builder("item_in_tab").setInTabs(List.of(CoreTabs.TAB_RESOURCES)).buildGeneric();
+		public static final RegistryObjectWrapper<JSGItem> ITEM_IN_TAB = ITEM_HELPER.builder("item_in_tab").setInTabs(List.of(CoreTabs.TAB_RESOURCES)).buildGeneric();
 
 
 		// this method will be called from the init() in ModRegistriesInit.java
@@ -147,10 +209,10 @@ Registry helper is a class that is responsible of holding registries and helping
 	- ...
 	</FileTree>
 	```java title="ModBlocks.java"
-	import dev.tauri.jsg.core.common.registry.helper.builder.block.BlockRegistryHelperGeneric;
-	import dev.tauri.jsg.core.common.registry.CoreTabs; // only needed when using CoreTabs
+	import dev.tauri.jsgcore.common.registry.CoreTabs; // only needed when using CoreTabs
+	import dev.tauri.jsgcore.common.registry.helper.builder.block.BlockRegistryHelperGeneric;
+	import dev.tauri.jsgcore.common.registry.helper.RegistryObjectWrapper;
 	import net.minecraft.world.level.block.Block;
-	import net.minecraftforge.registries.RegistryObject;
 
 	public class ModBlocks {
 		// create block registry helper
@@ -158,7 +220,7 @@ Registry helper is a class that is responsible of holding registries and helping
 
 
 		// register your block
-		public static final RegistryObject<Block> MY_AWESOME_BLOCK = BLOCK_HELPER.builder("my_awesome_block").buildGeneric();
+		public static final RegistryObjectWrapper<Block> MY_AWESOME_BLOCK = BLOCK_HELPER.builder("my_awesome_block").buildGeneric();
 
 
 		// this method will be called from the init() in ModRegistriesInit.java
