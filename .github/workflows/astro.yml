@@ -1,4 +1,4 @@
-name: Deploy Astro blog to GitHub Pages
+name: "Tau'ri Dev Docs deployment"
 
 on:
     # Trigger the workflow every time you push to the `main` branch
