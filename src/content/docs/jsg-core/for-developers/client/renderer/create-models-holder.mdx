@@ -20,7 +20,7 @@ but it's easier to use the models later in code with this method.
 	<FileTree>
 	- libs/
 	- src/main/
-		- java/your/namespace/your_mod_id/
+		- java/your/namespace/yourmodid/
 			- ...
 			- client/
 				- loader/
@@ -39,9 +39,9 @@ but it's easier to use the models later in code with this method.
 
 	```java title="ModModels.java"
 	// ... other imports
-	import dev.tauri.jsg.core.client.IModelsHolder;
-	import dev.tauri.jsg.core.client.LoadersHolder;
-	import dev.tauri.jsg.core.common.entity.BiomeOverlayInstance;
+	import dev.tauri.jsgcore.client.IModelsHolder;
+	import dev.tauri.jsgcore.client.LoadersHolder;
+	import dev.tauri.jsgcore.common.entity.BiomeOverlayInstance;
 
 	public enum ModModels implements IModelsHolder { // should implement IModelsHolder
 
@@ -49,7 +49,7 @@ but it's easier to use the models later in code with this method.
 		// 1st parameter is path to the model file - must end with .obj
 		// 2nd parameter is BASE path to the texture - file end is added automatically by scanning if file exists when loading textures (.png, then .webp and then .jpg)
 		// 3rd parameter is true/false - true if you want to use different textures for each biome overlay
-		MY_AWESOME_MODEL_WITH_TEXTURE("awesome/model.obj", "awesome/textures", true)
+		MY_AWESOME_MODEL_WITH_TEXTURE("awesome/model.obj", "awesome/texture", true)
 		;
 
 		// holds path to the obj model file
@@ -89,7 +89,7 @@ but it's easier to use the models later in code with this method.
 	<FileTree>
 	- libs/
 	- src/main/
-		- java/your/namespace/your_mod_id/
+		- java/your/namespace/yourmodid/
 			- ...
 			- client/
 				- loader/

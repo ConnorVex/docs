@@ -11,7 +11,7 @@ Modify your main mod class
 
 <FileTree>
 - libs/
-- src/main/java/your/namespace/your_mod_id/
+- src/main/java/your/namespace/yourmodid/
 	- **ExampleMod.java**
 - build.gradle
 - gradle.properties
@@ -19,8 +19,8 @@ Modify your main mod class
 - ...
 </FileTree>
 ```java title="ExampleMod.java"
-import dev.tauri.jsg.core.JSGAddon;
-import dev.tauri.jsg.core.JSGAddons;
+import dev.tauri.jsgcore.JSGAddon;
+import dev.tauri.jsgcore.JSGAddons;
 
 @Mod("your_mod_id")
 public class ExampleMod implements JSGAddon { // <--- must implement JSGAddon

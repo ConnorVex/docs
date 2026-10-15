@@ -12,104 +12,206 @@ However, the steps below should apply to other IDEs as well, with some minor cha
 
 ## Adding JSG: Core as a dependency
 
-<Steps>
-1. Update your `gradle.properties` as shown:
-	<FileTree>
-	- src/
-	- build.gradle
-	- **gradle.properties**
-	- setting.gradle
-	- ...
-	</FileTree>
 
-	Add these two lines:
+<Tabs>
+	<TabItem label="Forge 1.20.1">
+		<Steps>
+		1. Update your `gradle.properties` as shown:
+			<FileTree>
+			- src/
+			- build.gradle
+			- **gradle.properties**
+			- setting.gradle
+			- ...
+			</FileTree>
+			Add these two lines:
+			```properties adlew title="gradle.properties"
+			core_version=1+
+			core_version_range=[1.0.0.0,)
+			```
+			Make sure the file also contains this line:
 
-	```properties adlew title="gradle.properties"
-	core_version=1+
-	core_version_range=[1.0.0.0,)
-	```
+			```properties adlew title="gradle.properties"
+			minecraft_version=1.20.1
+			```
+		2. Update your `build.gradle` as shown:
+			<FileTree>
+			- src/
+			- **build.gradle**
+			- gradle.properties
+			- setting.gradle
+			- ...
+			</FileTree>
+			```kotlin adlew title="build.gradle"
+			minecraft {
+				// some minecraft stuff...
+				runs {
+					// more minecraft stuff...
+					data {
+						// another minecraft stuff...
+						// look for this:
+						args '--mod', mod_id, '--all',
+								'--output', file('src/generated/resources/'),
+								'--existing', file('src/main/resources/'),
+								'--existing-mod', "jsg_core" // <---- Add this line!!!
+					}	
+				}
+			}
 
-	Make sure the file also contains this line:
+			repositories {
+				// Add the maven central, if already not done
+				mavenCentral()
+			}
 
-	```properties adlew title="gradle.properties"
-	minecraft_version=1.20.1
-	```
-2. Update your `build.gradle` as shown:
-	<FileTree>
-	- src/
-	- **build.gradle**
-	- gradle.properties
-	- setting.gradle
-	- ...
-	</FileTree>
-	```kotlin adlew title="build.gradle"
-	minecraft {
-		// some minecraft stuff...
-		runs {
-			// more minecraft stuff...
-			data {
-				// another minecraft stuff...
-				// look for this:
-				args '--mod', mod_id, '--all',
-						'--output', file('src/generated/resources/'),
-						'--existing', file('src/main/resources/'),
-						'--existing-mod', "jsg_core" // <---- Add this line!!!
-			}	
-		}
-	}
+			dependencies {
+				// DO NOT FORGET transitive = false !!!!
+				// DO NOT FORGET TO PUT ":" AT THE END - to make gradle download the FULL shadowed jar file
+				implementation(fg.deobf("eu.tauridev:jsg-core-${minecraft_version}:${core_version}:") { transitive = false }) // <---- Add this line!!!
+			}
 
-	repositories {
-		// Add the maven central, if already not done
-		mavenCentral()
-	}
+			// UPDATE processResources TASK AS SHOWN: !IMPORTANT!
+			tasks.named('processResources', ProcessResources).configure {
+				var replaceProperties = [
+						minecraft_version      : minecraft_version,
+						minecraft_version_range: minecraft_version_range,
+						forge_version          : forge_version,
+						forge_version_range    : forge_version_range,
+						loader_version_range   : loader_version_range,
+						mod_id                 : mod_id,
+						mod_name               : mod_name,
+						mod_license            : mod_license,
+						mod_version            : version,
+						mod_authors            : mod_authors,
+						mod_description        : mod_description,
+						core_version_range     : core_version_range // <-- MAKE SURE THIS LINE IS PRESENT
+				]
 
-	dependencies {
-		// DO NOT FORGET transitive = false !!!!
-		// DO NOT FORGET TO PUT ":" AT THE END - to make gradle download the FULL shadowed jar file
-		implementation(fg.deobf("eu.tauridev:jsg-core-${minecraft_version}:${core_version}:") { transitive = false }) // <---- Add this line!!!
-	}
+				inputs.properties replaceProperties
 
-	// UPDATE processResources TASK AS SHOWN: !IMPORTANT!
-	tasks.named('processResources', ProcessResources).configure {
-		var replaceProperties = [
-				minecraft_version      : minecraft_version,
-				minecraft_version_range: minecraft_version_range,
-				forge_version          : forge_version,
-				forge_version_range    : forge_version_range,
-				loader_version_range   : loader_version_range,
-				mod_id                 : mod_id,
-				mod_name               : mod_name,
-				mod_license            : mod_license,
-				mod_version            : version,
-				mod_authors            : mod_authors,
-				mod_description        : mod_description,
-				core_version_range     : core_version_range // <-- MAKE SURE THIS LINE IS PRESENT
-		]
+				filesMatching(['META-INF/mods.toml', 'pack.mcmeta']) {
+					expand replaceProperties + [project: project]
+				}
+			}
+			```
+		3. Update mods.toml
+			<FileTree>
+			- src/main/resources/META-INF/
+				- **mods.toml**
+			- build.gradle
+			- gradle.properties
+			- setting.gradle
+			- ...
+			</FileTree>
+			```toml title="mods.toml"
+			# ADD THIS BLOCK
+			[[dependencies.${mod_id}]]
+				modId="jsg_core"
+				mandatory=true
+				versionRange="${core_version_range}"
+				ordering="NONE"
+				side="BOTH"
+			```
+		5. Reload your gradle project
+		</Steps>
+	</TabItem>
+	<TabItem label="NeoForge 1.21.1">
+		<Steps>
+		1. Update your `gradle.properties` as shown:
+			<FileTree>
+			- src/
+			- build.gradle
+			- **gradle.properties**
+			- setting.gradle
+			- ...
+			</FileTree>
+			Add these two lines:
+			```properties adlew title="gradle.properties"
+			core_version=2+
+			core_version_range=[2.0.0.0,)
+			```
+			Make sure the file also contains this line:
 
-		inputs.properties replaceProperties
+			```properties adlew title="gradle.properties"
+			minecraft_version=1.21.1
+			```
+		2. Update your `build.gradle` as shown:
+			<FileTree>
+			- src/
+			- **build.gradle**
+			- gradle.properties
+			- setting.gradle
+			- ...
+			</FileTree>
+			```kotlin adlew title="build.gradle"
+			neoForge {
+				// some minecraft stuff...
+				runs {
+					// more minecraft stuff...
+					data {
+						// another minecraft stuff...
+						// look for this:
+						programArguments.addAll '--mod', project.mod_id, '--all',
+								'--output', file('src/generated/resources/').absolutePath,
+								'--existing', file('src/main/resources/').absolutePath,
+								'--existing-mod', 'jsg_core' // <---- Add this line!!!
+					}	
+				}
+			}
 
-		filesMatching(['META-INF/mods.toml', 'pack.mcmeta']) {
-			expand replaceProperties + [project: project]
-		}
-	}
-	```
-3. Update mods.toml
-	<FileTree>
-	- src/main/resources/META-INF/
-		- **mods.toml**
-	- build.gradle
-	- gradle.properties
-	- setting.gradle
-	- ...
-	</FileTree>
-	```toml title="mods.toml"
-	# ADD THIS BLOCK
-	[[dependencies.${mod_id}]]
-		modId="jsg_core"
-		mandatory=true
-		versionRange="${core_version_range}"
-		ordering="NONE"
-		side="BOTH"
-	```
-5. Reload your gradle project
-</Steps>
+			repositories {
+				// Add the maven central, if already not done
+				mavenCentral()
+			}
+
+			dependencies {
+				// DO NOT FORGET transitive = false !!!!
+				// DO NOT FORGET TO PUT ":" AT THE END - to make gradle download the FULL shadowed jar file
+				implementation("eu.tauridev:jsg-core-${minecraft_version}:${core_version}:") { transitive = false } // <---- Add this line!!!
+			}
+
+			// UPDATE replaceProperties AS SHOWN: !IMPORTANT!
+			var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {
+				var replaceProperties = [
+						minecraft_version      : minecraft_version,
+						minecraft_version_range: minecraft_version_range,
+						neo_version            : neo_version,
+						neo_version_range      : neo_version_range,
+						loader_version_range   : loader_version_range,
+						mod_id                 : mod_id,
+						mod_name               : mod_name,
+						mod_license            : mod_license,
+						mod_version            : version,
+						mod_authors            : mod_authors,
+						mod_description        : mod_description,
+						core_version_range     : core_version_range // <-- MAKE SURE THIS LINE IS PRESENT
+				]
+				inputs.properties replaceProperties
+				expand replaceProperties
+				from "src/main/templates"
+				into "build/generated/sources/modMetadata"
+			}
+			sourceSets.main.resources.srcDir generateModMetadata
+			neoForge.ideSyncTask generateModMetadata
+			```
+		3. Update mods.toml
+			<FileTree>
+			- src/main/templates/META-INF/
+				- **neoforge.mods.toml**
+			- build.gradle
+			- gradle.properties
+			- setting.gradle
+			- ...
+			</FileTree>
+			```toml title="neoforge.mods.toml"
+			# ADD THIS BLOCK
+			[[dependencies.${mod_id}]]
+				modId="jsg_core"
+    			type="required"
+				versionRange="${core_version_range}"
+    			ordering="AFTER"
+				side="BOTH"
+			```
+		5. Reload your gradle project
+		</Steps>
+	</TabItem>
+</Tabs>
