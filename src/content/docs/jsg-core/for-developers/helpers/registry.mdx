@@ -5,7 +5,7 @@ description: "Using the registry helper class"
 sidebar:
   order: 0
 ---
-import { FileTree, Steps, Tabs, TabItem } from "@astrojs/starlight/components";
+import { FileTree, Steps, Tabs, TabItem, Code } from "@astrojs/starlight/components";
 
 Registry helper is a class that is responsible of holding registries and helping developer handle some of the registrations (Menu types for example).
 <Tabs>
@@ -131,6 +131,11 @@ Registry helper is a class that is responsible of holding registries and helping
 		</Steps>
 	</TabItem>
 </Tabs>
+
+## List of methods inside the RegistryHelper class
+import registryHelper from '/src/inc/java/jsg_core/IRegistryHelper.java?raw'
+
+<Code code={registryHelper} lang="java" title="IRegistryHelper.java" />
 
 ## Registering an item
 
