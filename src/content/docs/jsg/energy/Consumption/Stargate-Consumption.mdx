@@ -1,0 +1,48 @@
+---
+title: Stargate Consumption
+slug: jsg/energy/consumption/stargate-consumption
+description: Consumption of energy for stargates
+sidebar:
+  order: 6
+---
+import { Aside, Badge, Code } from '@astrojs/starlight/components';
+
+Stargates are POWER hungry devices. After all you are literally tearing apart the fabric of space time! JSG calculates how much Forge Energy (FE) you use based on a few factors. These factors can be adjusted in the dimension + stargate config for maximum customization.
+
+<Aside type="note" title="Important!">
+Knowing these calculations are not required for the enjoyment of this mod! This breakdown is for the more technical people!
+</Aside>
+
+The energy requirements of Stargates can be boiled down to a few key principles:
+- Greater distance between 2 gates = greater energy consumption
+- Greater distance between 2 **dimensions** = greater energy consumption
+- Orlin Gates + Universe Gates have an energy penalty, all costs are multiplied by 2.
+- Your address length plays a factor in energy usage. A 7 symbol address will always be cheaper than a 9 symbol address!
+
+<center>
+## Consumption Graph
+</center>
+|  |  |
+|--|--|
+|<center><div style="width: 700px">![](/assets/jsg/energy/consumption.webp)</div></center> 
+|<center>🟠 7 Symbol Address</center> | 
+|<center>🔵 8 Symbol Address</center> | 
+|<center>⚫ 9 Symbol Address</center> |
+
+There are 2 costs associated with operating a stargate:
+- Opening costs
+- Wormhole Maintainment costs
+
+<center>
+### Opening Costs
+</center>
+The Opening Cost is the amount of energy that the Stargate consumes when it establishes a connection to its destination and establishes a wormhole. 
+
+This is a massive failure point for dialing, as in order for the gate to connect there must be enough energy in the gate itself. If the total energy required to establish a wormhole is more than the energy buffer of the gate, then no connection will be established, and you will get the signature 'You're an idiot' noise from the gate.
+
+<center>
+### Wormhole Maintainment Costs
+</center>
+The Wormhole Maintainment Cost is different from the Opening Cost. This cost specifically calculates how much energy is consumed **PER TICK** that the Stargate is active. If you keep the wormhole active and you do not have enough energy once the stargate's energy levels hit a critical level, the wormhole will become **unstable.** Travel through the wormhole is not really advised. However if you choose to, don't be surprised if you don't make it to the other side.
+
+The instability will continue until either the Stargate is given more energy or it runs out completely and the wormhole automatically closes.
